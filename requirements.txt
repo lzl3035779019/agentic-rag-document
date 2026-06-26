@@ -1,0 +1,4 @@
+# For the existing conda env `chain`.
+# Do not pin LangChain/LangGraph here: that environment already contains
+# the Agentic RAG stack, and pinning older versions can downgrade it.
+streamlit

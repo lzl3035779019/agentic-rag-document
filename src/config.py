@@ -1,0 +1,38 @@
+from pathlib import Path
+
+# LLM_MODEL = "qwen2.5:7b"
+LLM_MODEL = "qwen3.5-flash"
+EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+CACHE_NAMESPACE = "agentic_rag_visualized_v3"
+
+BASE_DIR = Path(__file__).resolve()
+PROJECT_ROOT = BASE_DIR.parents[1]
+# print(f"项目根目录: {PROJECT_ROOT}")
+# print(f"BASE_DIR: {BASE_DIR}")
+
+DATA_PATH = PROJECT_ROOT / "data/handbook"
+CHROMA_DIR = PROJECT_ROOT / "chroma_db"
+RAW_DOCS_DIR = PROJECT_ROOT / "data" / "raw_docs"
+PARSED_DOCS_DIR = PROJECT_ROOT / "data" / "parsed_docs"
+
+# CHUNK_SIZE = 900
+# CHUNK_OVERLAP = 100
+# TOP_K = 4
+
+PARENT_CHUNK_SIZE = 3000
+PARENT_CHUNK_OVERLAP = 300
+
+CHILD_CHUNK_SIZE = 500
+CHILD_CHUNK_OVERLAP = 100
+
+TOP_K_DENSE = 20
+TOP_K_BM25 = 20
+FINAL_TOP_K = 8
+ANSWER_CONTEXT_TOP_K = 5
+ANSWER_MEDIUM_RISK_CONTEXT_TOP_K = 6
+ANSWER_HIGH_RISK_CONTEXT_TOP_K = 8
+REGENERATE_CONTEXT_TOP_K = 6
+
+MAX_REWRITE_RETRY = 2
+MAX_REGENERATE_RETRY = 1
+MIN_RELEVANT_DOCS = 1

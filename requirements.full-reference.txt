@@ -1,0 +1,22 @@
+# Reference only. Prefer `requirements.txt` in the existing `chain` env.
+#
+# Core Agentic RAG packages:
+langchain
+langchain-core
+langchain-openai
+langchain-community
+langchain-text-splitters
+langchain-huggingface
+langchain-qdrant
+langchain-ollama
+langgraph
+qdrant-client
+rank-bm25
+sentence-transformers
+python-dotenv
+openai
+pydantic
+langfuse
+
+# UI:
+streamlit

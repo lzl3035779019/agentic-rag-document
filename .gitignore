@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local environments
+.venv/
+venv/
+env/
+.conda/
+
+# Secrets
+.env
+src/.env
+*.key
+*.pem
+
+# Local runtime
+.streamlit/secrets.toml
+streamlit.*.log
+*.log
+
+# Local caches and generated stores
+data/cache/
+data/knowledge_bases/
+qdrant_storage/
+chroma/
+chroma_db/
+*.sqlite
+*.sqlite3
+*.db
+
+# Uploaded/generated user documents
+uploads/
+tmp/
+temp/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
