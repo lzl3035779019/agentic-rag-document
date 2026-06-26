@@ -16,6 +16,62 @@
 - 可折叠的模型执行过程
 - 来源文档和证据片段展示
 
+## 系统流程
+
+```mermaid
+flowchart TD
+    A["上传资料"] --> B["文档解析"]
+    B --> C["清洗为 Markdown"]
+    C --> D{"语言策略"}
+    D --> E["中文切分策略"]
+    D --> F["英文切分策略"]
+    E --> G["Parent-child chunks"]
+    F --> G
+    G --> H["Embedding model"]
+    H --> I["Qdrant collection"]
+    G --> J["BM25 index"]
+    I --> K["知识库注册"]
+    J --> K
+
+    U["用户问题"] --> L{"自动选择知识库"}
+    K --> L
+    L --> M["Agentic RAG graph"]
+    M --> N["答案 + Sources + 执行过程"]
+    N --> O["Streamlit 可视化页面"]
+```
+
+## Agentic RAG 执行流程
+
+```mermaid
+flowchart TD
+    Q["用户问题"] --> R{"Router"}
+    R -->|simple| C["clarify"]
+    R -->|complex| D["decompose"]
+
+    D --> SQ["子问题列表"]
+    SQ --> C
+
+    C -->|需要澄清| CL["返回澄清问题"]
+    C -->|问题清楚| RET["retrieve"]
+
+    RET --> RW{"检索是否足够"}
+    RW -->|不足| REW["rewrite query"]
+    REW --> RET
+    RW -->|足够| RK{"risk level"}
+
+    RK -->|low / medium| FA["fast_answer"]
+    RK -->|high| EV["answer_with_evidence"]
+
+    EV --> GA{"grade_answer"}
+    GA -->|通过| ANS["最终答案"]
+    GA -->|不通过| RG["regenerate_answer"]
+    RG --> GA
+    GA -->|仍失败| FB["fallback_answer"]
+
+    FA --> ANS
+    FB --> ANS
+```
+
 ## 项目结构
 
 ```text
@@ -100,30 +156,6 @@ data/knowledge_bases/
 ```
 
 该目录已被 `.gitignore` 排除，避免把个人资料、缓存向量库配置上传到 GitHub。
-
-## 回答流程
-
-单问题流程：
-
-```text
-question
-  -> clarify
-  -> retrieve
-  -> rewrite retry if retrieval is weak
-  -> risk routing
-  -> fast_answer or answer_with_evidence
-  -> grade_answer / regenerate / fallback for strict path
-```
-
-复杂问题流程：
-
-```text
-question
-  -> router: complex
-  -> decompose
-  -> run single-question graph for each sub-question
-  -> aggregate final answer
-```
 
 ## 中英文策略
 
