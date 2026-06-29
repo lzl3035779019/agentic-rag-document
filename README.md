@@ -1,5 +1,11 @@
 # Agentic RAG Visualized
 
+## Demo
+
+<video src="docs/assets/rag.mp4" controls width="100%"></video>
+
+If the video does not render on GitHub, open it directly: [docs/assets/rag.mp4](docs/assets/rag.mp4)
+
 一个可视化 Agentic RAG 示例项目。项目保留完整的 Agentic RAG 流程，并用 Streamlit 展示路由、澄清、检索、改写、风险判断、证据回答、答案校验和多问题分解过程。
 
 ## 功能
