@@ -153,6 +153,44 @@ def invoke_llm_cached(task_name: str, prompt: Any) -> str:
     return content
 
 
+def _stream_chunk_text(chunk: Any) -> str:
+    content = getattr(chunk, "content", chunk)
+    if content is None:
+        return ""
+    if isinstance(content, list):
+        parts = []
+        for item in content:
+            if isinstance(item, dict):
+                parts.append(str(item.get("text", "")))
+            else:
+                parts.append(str(item))
+        return "".join(parts)
+    return str(content)
+
+
+def _cached_response_chunks(text: str, chunk_size: int = 24):
+    for index in range(0, len(text), chunk_size):
+        yield text[index:index + chunk_size]
+
+
+def invoke_llm_cached_stream(task_name: str, prompt: Any):
+    prompt_text = prompt_to_text(prompt)
+    cached = get_cached_response(task_name, prompt_text)
+    if cached is not None:
+        yield from _cached_response_chunks(cached)
+        return
+
+    parts = []
+    for chunk in get_llm().stream(prompt):
+        text = _stream_chunk_text(chunk)
+        if not text:
+            continue
+        parts.append(text)
+        yield text
+
+    save_cached_response(task_name, prompt_text, "".join(parts))
+
+
 def cache_stats() -> list[tuple[str, int, int]]:
     init_cache()
     with sqlite3.connect(CACHE_PATH) as conn:

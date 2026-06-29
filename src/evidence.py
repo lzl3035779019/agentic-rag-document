@@ -4,7 +4,7 @@ from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
 
 from src.basic_rag import format_docs
-from src.llm_cache import invoke_llm_cached
+from src.llm_cache import invoke_llm_cached, invoke_llm_cached_stream
 
 
 EVIDENCE_PROMPT_EN = ChatPromptTemplate.from_template(
@@ -307,6 +307,19 @@ def answer_from_evidence(question: str, evidence: dict[str, list[str]]) -> str:
     return invoke_llm_cached("answer_from_evidence", prompt)
 
 
+def answer_from_evidence_stream(question: str, evidence: dict[str, list[str]]):
+    facts = evidence.get("facts", [])
+    missing = evidence.get("missing_information", [])
+    prompt = _select_evidence_answer_prompt(question).invoke(
+        {
+            "question": question,
+            "facts": "\n".join(f"- {fact}" for fact in facts) or "No directly supported facts were extracted.",
+            "missing_information": "\n".join(f"- {item}" for item in missing) or "None.",
+        }
+    )
+    yield from invoke_llm_cached_stream("answer_from_evidence", prompt)
+
+
 def answer_with_evidence(question: str, docs: list[Document]) -> dict:
     prompt = _select_answer_with_evidence_prompt(question).invoke(
         {
@@ -346,3 +359,14 @@ def fast_answer(question: str, docs: list[Document]) -> str:
         }
     )
     return invoke_llm_cached("fast_answer", prompt).strip()
+
+
+def fast_answer_stream(question: str, docs: list[Document]):
+    prompt_template = _select_fast_answer_prompt(question)
+    prompt = prompt_template.invoke(
+        {
+            "question": question,
+            "context": format_docs(docs)[:FAST_ANSWER_CONTEXT_CHAR_LIMIT],
+        }
+    )
+    yield from invoke_llm_cached_stream("fast_answer", prompt)

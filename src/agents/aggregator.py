@@ -1,6 +1,6 @@
 from langchain_core.prompts import ChatPromptTemplate
 
-from src.llm_cache import invoke_llm_cached
+from src.llm_cache import invoke_llm_cached, invoke_llm_cached_stream
 
 
 AGGREGATE_PROMPT = ChatPromptTemplate.from_template(
@@ -26,7 +26,7 @@ Final answer:
 )
 
 
-def aggregate_answers(question: str, sub_results: list[dict]) -> str:
+def _aggregate_prompt(question: str, sub_results: list[dict]):
     formatted = []
     for index, result in enumerate(sub_results, start=1):
         formatted.append(
@@ -40,7 +40,17 @@ def aggregate_answers(question: str, sub_results: list[dict]) -> str:
             "sub_answers": "\n\n".join(formatted),
         }
     )
+    return prompt
+
+
+def aggregate_answers(question: str, sub_results: list[dict]) -> str:
+    prompt = _aggregate_prompt(question, sub_results)
     return invoke_llm_cached("aggregate_answers", prompt)
+
+
+def aggregate_answers_stream(question: str, sub_results: list[dict]):
+    prompt = _aggregate_prompt(question, sub_results)
+    yield from invoke_llm_cached_stream("aggregate_answers", prompt)
 
 
 if __name__ == "__main__":

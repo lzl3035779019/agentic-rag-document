@@ -12,6 +12,8 @@ from src.evidence import (
     _select_evidence_answer_prompt,
     _select_evidence_prompt,
     _select_fast_answer_prompt,
+    fast_answer_stream,
+    answer_from_evidence_stream,
 )
 
 
@@ -25,6 +27,42 @@ def test_english_question_uses_english_fast_answer_prompt():
 
 def test_fast_answer_uses_medium_detail_context_limit():
     assert FAST_ANSWER_CONTEXT_CHAR_LIMIT >= 12000
+
+
+def test_fast_answer_stream_uses_fast_answer_task(monkeypatch):
+    calls = {}
+
+    def fake_stream(task_name, prompt):
+        calls["task_name"] = task_name
+        return iter(["ok"])
+
+    monkeypatch.setattr(
+        "src.evidence.invoke_llm_cached_stream",
+        fake_stream,
+    )
+
+    chunks = list(fast_answer_stream("What is this?", []))
+
+    assert chunks == ["ok"]
+    assert calls["task_name"] == "fast_answer"
+
+
+def test_answer_from_evidence_stream_uses_answer_from_evidence_task(monkeypatch):
+    calls = {}
+
+    def fake_stream(task_name, prompt):
+        calls["task_name"] = task_name
+        return iter(["grounded"])
+
+    monkeypatch.setattr(
+        "src.evidence.invoke_llm_cached_stream",
+        fake_stream,
+    )
+
+    chunks = list(answer_from_evidence_stream("What is this?", {"facts": ["A"], "missing_information": []}))
+
+    assert chunks == ["grounded"]
+    assert calls["task_name"] == "answer_from_evidence"
 
 
 def test_chinese_question_uses_chinese_evidence_prompts():
