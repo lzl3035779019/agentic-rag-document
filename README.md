@@ -169,16 +169,6 @@ data/knowledge_bases/
 - 中文问题的分解、改写、澄清、回答和证据流程会保持中文。
 - 英文问题保持英文。
 
-## 不会上传的内容
-
-`.gitignore` 已排除：
-
-- `.env`
-- LLM SQLite cache
-- 本地上传资料和知识库
-- Qdrant / Chroma 本地数据
-- 日志文件
-- Python 编译缓存
 
 ## 测试
 
@@ -186,13 +176,4 @@ data/knowledge_bases/
 pytest tests -q
 ```
 
-## 说明
 
-这个项目是教学和实验用途的 Agentic RAG 可视化实现。生产环境中建议继续补充：
-
-- 更严格的权限控制
-- 用户上传文件的安全扫描
-- 更完整的文档解析异常处理
-- 可配置 reranker
-- 持久化用户会话
-- 更细的评测集和线上监控
